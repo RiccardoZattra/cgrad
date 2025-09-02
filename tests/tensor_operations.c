@@ -14,10 +14,41 @@
 #include "cgrad/tensor/tensor_alloc.h"
 #include <stdio.h>
 
-void tensor2d_mult_test_cpu_instance_1(struct test_result *);
-void tensor_add_test_cpu_instance_1(struct test_result *);
-void tensor_add_test_cpu_instance_2(struct test_result *);
-void tensor_add_test_cpu_instance_3(struct test_result *);
+/**
+ * @brief Implements a first test for the multiplication between 2D tensors 
+ * 
+ * @param result Pointer to a test_result struct where to save the results
+ * 
+ * @return None
+ */
+void tensor2d_mult_test_cpu_instance_1(struct test_result *result);
+
+/**
+ * @brief Implements a first test for the sum between 2D tensors 
+ * 
+ * @param result Pointer to a test_result struct where to save the results
+ * 
+ * @return None
+ */
+void tensor_add_test_cpu_instance_1(struct test_result *result);
+
+/**
+ * @brief Implements a second test for the sum between 2D tensors
+ * 
+ * @param result Pointer to a test_result struct where to save the results
+ * 
+ * @return None
+ */
+void tensor_add_test_cpu_instance_2(struct test_result *result);
+
+/**
+ * @brief Implements a third test for the sum between 2D tensors
+ * 
+ * @param result Pointer to a test_result struct where to save the results
+ * 
+ * @return None
+ */
+void tensor_add_test_cpu_instance_3(struct test_result *result);
 
 int main(int argc, char **argv)
 {

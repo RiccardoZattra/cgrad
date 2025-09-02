@@ -1,7 +1,26 @@
 #include "cgrad_test/datastructures/test_list/test_list.h"
 #include <string.h>
 
+/**
+ * @brief Allocates a new list node to contain a new test
+ * 
+ * @param test_case_func Pointer to a function that we want to test
+ * 
+ * @return  Pointer to the newly created test list node
+ */
 static struct test_list_node *test_list_node_alloc(test_case test_case_func);
+
+/**
+ * @brief Frees a test list node safely.
+ *
+ * This function releases the memory associated with the given
+ * test list node. If the pointer is NULL, the function does nothing.
+ * After calling this function, the node pointer should not be used.
+ *
+ * @param node Pointer to the test list node to be freed. Can be NULL.
+ *
+ * @return None
+ */
 static void test_list_node_free(struct test_list_node *const node);
 
 struct test_list *tests_list_alloc()
@@ -57,7 +76,7 @@ void test_list_append(struct test_list *const list, test_case test_case_func, co
     {
         return;
     }
-    if (!test_case_func)
+    if (!test_case_func) 
     {
         return;
     }
