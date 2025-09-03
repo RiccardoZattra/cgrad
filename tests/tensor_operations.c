@@ -50,6 +50,15 @@ void tensor_add_test_cpu_instance_2(struct test_result *result);
  */
 void tensor_add_test_cpu_instance_3(struct test_result *result);
 
+/**
+ * @brief Implements a fourth test for the sum between 2D tensors
+ * 
+ * @param result Pointer to a test_result struct where to save the results
+ * 
+ * @return None
+ */
+void tensor_add_test_cpu_instance_4(struct test_result *result);
+
 int main(int argc, char **argv)
 {
     struct test_list *tests = tests_list_alloc();
@@ -57,6 +66,7 @@ int main(int argc, char **argv)
     test_list_append(tests, &tensor_add_test_cpu_instance_1, "tensor_add_test_cpu_instance_1");
     test_list_append(tests, &tensor_add_test_cpu_instance_2, "tensor_add_test_cpu_instance_2");
     test_list_append(tests, &tensor_add_test_cpu_instance_3, "tensor_add_test_cpu_instance_3");
+    test_list_append(tests, &tensor_add_test_cpu_instance_4, "tensor_add_test_cpu_instance_4");
 
     run_tests(tests);
 
@@ -68,8 +78,8 @@ int main(int argc, char **argv)
     float percentage_failed_tests = ((float)num_failed_tests / (float)tests->size) * 100.0;
 
     printf("Number of tests: %ld\n", tests->size);
-    printf("Number of passed tests: %ld (%.2f \%)\n", num_passed_tests, percentage_passed_tests);
-    printf("Number of failed tests: %ld (%.2f \%)\n", num_failed_tests, percentage_failed_tests);
+    printf("Number of passed tests: %ld (%.2f %%)\n", num_passed_tests, percentage_passed_tests);
+    printf("Number of failed tests: %ld (%.2f %%)\n", num_failed_tests, percentage_failed_tests);
 
     return EXIT_SUCCESS;
 }
@@ -180,7 +190,36 @@ void tensor_add_test_cpu_instance_3(struct test_result *result)
     struct tensor *out = NULL;
     tensor_add(t1, t2, &out, false, &env);
 
-    ASSERT_TRUE(!tensor_no_grad_equal(out, expected_out), "One or more output values incorrect.");
+    ASSERT_FALSE(tensor_no_grad_equal(out, expected_out), "One or more output values incorrect.");
+
+test_cleanup:
+    cgrad_env_cleanup(&env);
+}
+
+void tensor_add_test_cpu_instance_4(struct test_result *result)
+{
+    const int SEED = 42;
+    const size_t INTERMEDIATES_CAPACITY = 20;
+    const cgrad_dtype DTYPE = DTYPE_INT32;
+
+    struct cgrad_env env;
+    ASSERT_TRUE(cgrad_env_init(&env, SEED, INTERMEDIATES_CAPACITY) == NO_ERROR, "CGrad Environment Initialization should not fail.");
+
+    const size_t shape[] = {3, 2};
+    const int32_t t1_data[] = {1, 2, 1, 3, -2, 5};
+    //Il DTYPE qui dentro serve per fare calcoli e settare il campo dtype sul tensore
+    struct tensor *t1 = tensor_from_array_alloc(&env, t1_data, shape, 2, DTYPE);
+
+    const int32_t t2_data[] = {0, 2, -1, 10, 14, 8};
+    struct tensor *t2 = tensor_from_array_alloc(&env, t2_data, shape, 2, DTYPE);
+
+    const int32_t expected_out_data[] = {1, 4, 0, 13, 12, 13};
+    struct tensor *expected_out = tensor_from_array_alloc(&env, expected_out_data, shape, 2, DTYPE);
+
+    struct tensor *out = NULL;
+    tensor_add(t1, t2, &out, false, &env);
+
+    ASSERT_TRUE(tensor_no_grad_equal(out, expected_out), "One or more output values incorrect.");
 
 test_cleanup:
     cgrad_env_cleanup(&env);

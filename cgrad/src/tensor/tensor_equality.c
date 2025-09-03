@@ -3,6 +3,7 @@
 
 static bool tensor_no_grad_same_data_f32(const struct tensor *const t1, const struct tensor *const t2);
 static bool tensor_no_grad_same_data_f64(const struct tensor *const t1, const struct tensor *const t2);
+static bool tensor_no_grad_same_data_i32(const struct tensor *const t1, const struct tensor *const t2);
 
 bool tensor_no_grad_equal(const struct tensor *const t1, const struct tensor *const t2)
 {
@@ -79,6 +80,8 @@ inline bool tensor_no_grad_same_data(const struct tensor *const t1, const struct
         return tensor_no_grad_same_data_f32(t1, t2);
     case DTYPE_FLOAT64:
         return tensor_no_grad_same_data_f64(t1, t2);
+    case DTYPE_INT32:
+        return tensor_no_grad_same_data_i32(t1, t2);
     default:
         return false;
     }
@@ -110,6 +113,22 @@ static bool tensor_no_grad_same_data_f64(const struct tensor *const t1, const st
     for (size_t i = 0; i < t1->data_size; i++)
     {
         if (fabs(t1_data[i] - t2_data[i]) > EPS)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static bool tensor_no_grad_same_data_i32(const struct tensor *const t1, const struct tensor *const t2)
+{
+    int32_t *t1_data = t1->data;
+    int32_t *t2_data = t2->data;
+
+    for (size_t i = 0; i < t1->data_size; i++)
+    {
+        if (t1_data[i] != t2_data[i])
         {
             return false;
         }

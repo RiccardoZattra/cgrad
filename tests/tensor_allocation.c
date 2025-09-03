@@ -47,8 +47,8 @@ int main(int argc, char **argv)
     float percentage_failed_tests = ((float)num_failed_tests / (float)tests->size) * 100.0;
 
     printf("Number of tests: %ld\n", tests->size);
-    printf("Number of passed tests: %ld (%.2f \%)\n", num_passed_tests, percentage_passed_tests);
-    printf("Number of failed tests: %ld (%.2f \%)\n", num_failed_tests, percentage_failed_tests);
+    printf("Number of passed tests: %ld (%.2f %%)\n", num_passed_tests, percentage_passed_tests);
+    printf("Number of failed tests: %ld (%.2f %%)\n", num_failed_tests, percentage_failed_tests);
 
     return EXIT_SUCCESS;
 }
