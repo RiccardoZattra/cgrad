@@ -3,6 +3,15 @@
 
 #include "cgrad_test/test_result.h"
 
+/**
+ * @brief Sets an error in a test result struct
+ * 
+ * @param result Constant pointer to the struct test result where to write the error
+ * @param err cgrad_test_result_error type specifying the obtained error
+ * @param msg Error message to be store in the result struct
+ * 
+ * @return None
+ */
 static inline void test_result_set_error(struct test_result *const result, cgrad_test_result_error err, const char *msg);
 
 #define ASSERT_TRUE(expr, msg)                               \

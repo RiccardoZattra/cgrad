@@ -3,8 +3,39 @@
 #include "cgrad/tensor/tensor_equality.h"
 #include <cblas.h>
 
+/**
+ * @brief Wrapper function to perform a*x+y, (x,y tensors, 'a' scalar) according to their value's type
+ * 
+ * @param x Constant pointer to x
+ * @param y Constant pointer to y
+ * @param alpha Constant double for the scalar
+ * 
+ * @return A value ::cgrad_error indicating the result of the operation
+ *         - OPERATION_INVALID_TENSOR_DTYPE type not supported
+ *         - NO_ERROR no errors
+ */
 static inline cgrad_error tensor_axpy_dispatch(const struct tensor *const x, struct tensor *const y, const double alpha);
+/**
+ * @brief Perform a*x+y, with x,y 64-bit floating point tensors
+ * 
+ * @param x Constant pointer to x
+ * @param y Constant pointer to y
+ * @param alpha Constant double for the scalar
+ * 
+ * @return A value ::cgrad_error indicating the result of the operation
+ *         - NO_ERROR no errors
+ */
 static cgrad_error tensor_axpy_f64(const struct tensor *const x, struct tensor *const y, const double alpha);
+/**
+ * @brief Perform a*x+y, with x,y 32-bit floating point tensors
+ * 
+ * @param x Constant pointer to x
+ * @param y Constant pointer to y
+ * @param alpha Constant double for the scalar
+ * 
+ * @return A value ::cgrad_error indicating the result of the operation
+ *         - NO_ERROR no errors
+ */
 static cgrad_error tensor_axpy_f32(const struct tensor *const x, struct tensor *const y, const double alpha);
 
 cgrad_error tensor_axpy(const struct tensor *const x, struct tensor *const y, const double alpha)

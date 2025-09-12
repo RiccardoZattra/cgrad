@@ -10,10 +10,94 @@ typedef enum tensor_add_operand
     RHS_TENSOR,
 } tensor_add_operand;
 
+/**
+ * @brief Update the computational graph related when performing the add operation
+ * 
+ * @param x Constant pointer to the first operand
+ * @param y Constant pointer to the second operand
+ * @param out Constant pointer to a pointer to store the result
+ * @param env Pointer to a struct cgrad_env 
+ * 
+ * @return A value ::cgrad_error indicating the result of the operation
+ *         - TENSOR_NULL null pointer to x,y or out
+ *         - TENSOR_GRAD_NULL null pointer to gradient tensor of x,y or out
+ *         - ALLOCATORS_NULL null pointer to allocators contained in env
+ *         - AUTOGRAD_BACKPROPAGATION_FUNCTION_NULL null pointer to the backpropagation function
+ *         - NO_ERROR no errors
+ */
 static inline cgrad_error tensor_add_update_graph(struct tensor *const x, struct tensor *const y, struct tensor **const out, struct cgrad_env *const env);
+
+/**
+ * @brief Wrapper function to add two tensor according to their value's type
+ * 
+ * @param x Constant pointer to the first operand
+ * @param y Constant pointer to the second operand
+ * @param out Constant pointer to output operand
+ * 
+ * @return A value ::cgrad_error indicating the result of the operation
+ *         - OPERATION_INVALID_TENSOR_DTYPE type not supported
+ *         - NO_ERROR no errors
+ */
 static inline cgrad_error tensor_add_dispatch(const struct tensor *const x, const struct tensor *const y, struct tensor *const out);
+
+/**
+ * @brief  Computes the sum of two 64-bit floating point tensors.
+ * 
+ * @param x Constant pointer to the first operand
+ * @param y Constant pointer to the second operand
+ * @param out Constant pointer to output operand
+ * 
+ * @return A value ::cgrad_error indicating the result of the operation
+ *         - NO_ERROR no errors
+ */
 static cgrad_error tensor_add_f64(const struct tensor *const x, const struct tensor *const y, struct tensor *const out);
+
+/**
+ * @brief  Computes the sum of two 32-bit floating point tensors.
+ * 
+ * @param x Constant pointer to the first operand
+ * @param y Constant pointer to the second operand
+ * @param out Constant pointer to output operand
+ * 
+ * @return A value ::cgrad_error indicating the result of the operation
+ *         - NO_ERROR no errors
+ */
 static cgrad_error tensor_add_f32(const struct tensor *const x, const struct tensor *const y, struct tensor *const out);
+
+/**
+ * @brief  Computes the sum of two 32-bit integer tensors.
+ * 
+ * @param x Constant pointer to the first operand
+ * @param y Constant pointer to the second operand
+ * @param out Constant pointer to output operand
+ * 
+ * @return A value ::cgrad_error indicating the result of the operation
+ *         - NO_ERROR no errors
+ */
+static cgrad_error tensor_add_i32(const struct tensor *const x, const struct tensor *const y, struct tensor *const out);
+
+/**
+ * @brief  Computes the sum of two 16-bit integer tensors.
+ * 
+ * @param x Constant pointer to the first operand
+ * @param y Constant pointer to the second operand
+ * @param out Constant pointer to output operand
+ * 
+ * @return A value ::cgrad_error indicating the result of the operation
+ *         - NO_ERROR no errors
+ */
+static cgrad_error tensor_add_i16(const struct tensor *const x, const struct tensor *const y, struct tensor *const out);
+
+/**
+ * @brief  Backpropagate the gradient for the operation
+ * 
+ * @param ctx Constant pointer to a struct backpropagation_context 
+ * @param grad_wrt_out Constant pointer to a tensor containing the gradient with respect to output
+ * @param grad_wrt_operand Constant pointer to a tensor where to save the gradient with respect to the operand
+ * 
+ * @return A value ::cgrad_error indicating the result of the operation
+ *         - NO_ERROR no errors
+ */
 static cgrad_error tensor_add_backpropagate(const struct backpropagation_context *const ctx, const struct tensor *const grad_wrt_out, struct tensor *grad_wrt_operand);
 
 cgrad_error tensor_add(struct tensor *const x, struct tensor *const y, struct tensor **const out, const bool track_grad, struct cgrad_env *const env)
@@ -90,6 +174,10 @@ static inline cgrad_error tensor_add_dispatch(const struct tensor *const x, cons
         return tensor_add_f64(x, y, out);
     case DTYPE_FLOAT32:
         return tensor_add_f32(x, y, out);
+    case DTYPE_INT32:
+        return tensor_add_i32(x,y,out);
+    case DTYPE_INT16:
+        return tensor_add_i16(x,y,out);
     default:
         return OPERATION_INVALID_TENSOR_DTYPE;
     }
@@ -114,6 +202,32 @@ static cgrad_error tensor_add_f32(const struct tensor *const x, const struct ten
     float *restrict out_data = (float *)out->data;
     float *restrict A_data = (float *)x->data;
     float *restrict B_data = (float *)y->data;
+
+    for (size_t i = 0; i < x->data_size; i++)
+    {
+        out_data[i] = A_data[i] + B_data[i];
+    }
+
+    return NO_ERROR;
+}
+static cgrad_error tensor_add_i32(const struct tensor *const x, const struct tensor *const y, struct tensor *const out)
+{
+    int32_t *restrict out_data = (int32_t *)out->data;
+    int32_t *restrict A_data = (int32_t *)x->data;
+    int32_t *restrict B_data = (int32_t *)y->data;
+
+    for (size_t i = 0; i < x->data_size; i++)
+    {
+        out_data[i] = A_data[i] + B_data[i];
+    }
+
+    return NO_ERROR;
+}
+static cgrad_error tensor_add_i16(const struct tensor *const x, const struct tensor *const y, struct tensor *const out)
+{
+    int16_t *restrict out_data = (int16_t *)out->data;
+    int16_t *restrict A_data = (int16_t *)x->data;
+    int16_t *restrict B_data = (int16_t *)y->data;
 
     for (size_t i = 0; i < x->data_size; i++)
     {
