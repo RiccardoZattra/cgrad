@@ -18,7 +18,6 @@
 
 #define OUTPUT_ITERATION_FREQ 25
 
-/*ciao come va*/
 int main(int argc, char **argv)
 {
     if (argc != 2)
