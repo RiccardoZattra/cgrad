@@ -8,6 +8,7 @@
         "computational_graph_cpu_allocator.h": "c",
         "relu.h": "c",
         "linear.h": "c",
-        "random": "c"
+        "random": "c",
+        "config.h": "c"
     }
 }
