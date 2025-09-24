@@ -18,12 +18,6 @@ static inline void indexes_permutation_swap(struct indexes_permutation *const ix
     ixs_permutation->indexes[i] = temp;
 }
 
-/**
- * @brief Allocates an indexes_permutation structure for the given size.
- *
- * @param size Number of indexes to permute.
- * @return Pointer to the allocated structure, or NULL if allocation failed.
- */
 struct indexes_permutation *indexes_permutation_alloc(const size_t size)
 {
     struct indexes_permutation *ixs_permutation = malloc(sizeof(struct indexes_permutation));
@@ -46,12 +40,6 @@ struct indexes_permutation *indexes_permutation_alloc(const size_t size)
     return ixs_permutation;
 }
 
-/**
- * @brief Initializes the permutation with a random shuffle (Fisher-Yates).
- *
- * @param ixs_permutation Pointer to the permutation structure.
- * @return NO_ERROR on success, or an error code on failure.
- */
 cgrad_error indexes_permutation_init(struct indexes_permutation* const ixs_permutation)
 {
     // Fisher-Yates shuffles
@@ -69,16 +57,6 @@ cgrad_error indexes_permutation_init(struct indexes_permutation* const ixs_permu
     return NO_ERROR;
 }
 
-/**
- * @brief Samples a batch of indexes from the permutation.
- *
- * Copies batch_size indexes from the current position into the batch container.
- *
- * @param ixs_permutation Pointer to the permutation structure.
- * @param ixs_batch Pointer to the batch container to fill.
- * @param batch_size Number of indexes to sample.
- * @return NO_ERROR on success, or an error code on failure.
- */
 cgrad_error indexes_permutation_sample_index_batch(const struct indexes_permutation *const ixs_permutation, struct indexes_batch *const ixs_batch, const size_t batch_size)
 {
     if (!ixs_permutation)
