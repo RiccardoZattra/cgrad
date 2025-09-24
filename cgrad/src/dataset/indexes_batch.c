@@ -1,14 +1,7 @@
 #include "cgrad/dataset/indexes_batch.h"
 #include <stdlib.h>
 
-/**
- * @brief Allocates an indexes_batch structure with the specified capacity.
- *
- * The batch is initially empty (size = 0).
- *
- * @param capacity Maximum number of indexes that can be stored.
- * @return Pointer to the allocated indexes_batch, or NULL if allocation failed.
- */
+
 struct indexes_batch *indexes_batch_alloc(const size_t capacity)
 {
     struct indexes_batch *ixs_batch = malloc(sizeof(struct indexes_batch));
@@ -35,11 +28,6 @@ struct indexes_batch *indexes_batch_alloc(const size_t capacity)
     return ixs_batch;
 }
 
-/**
- * @brief Frees the memory allocated for an indexes_batch structure.
- *
- * @param ixs_batch Pointer to the indexes_batch to free.
- */
 void indexes_batch_free(struct indexes_batch *ixs_batch)
 {
     free(ixs_batch->indexes);
