@@ -9,6 +9,7 @@
         "relu.h": "c",
         "linear.h": "c",
         "random": "c",
-        "config.h": "c"
+        "config.h": "c",
+        "type_traits": "c"
     }
 }

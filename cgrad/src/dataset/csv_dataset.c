@@ -59,11 +59,103 @@ static size_t csv_dataset_count_cols(FILE *file);
  */
 static cgrad_error csv_dataset_fill_data(struct csv_dataset *dataset, FILE *file);
 
+/**
+ * @brief Dispatches feature copy operation to the appropriate function based on tensor data type.
+ *
+ * This function writes the feature values of a single CSV row into the input tensor
+ * at batch index @p i. The first column (label) is assumed to be excluded, so @p features
+ * should point to the array starting from the second column of the CSV row.
+ *
+ * The actual copy is delegated to a type-specific implementation depending on
+ * whether the tensor stores float64 or float32 values.
+ *
+ * @param[in,out] inputs   Pointer to the input tensor where the features will be written.
+ * @param[in]     features Pointer to the feature values extracted from the CSV row
+ *                         (all columns except the label).
+ * @param[in]     i        Batch index specifying the row in the input tensor to fill.
+ * @param[in]     cols     Total number of columns in the CSV dataset (including the label).
+ *
+ * @note
+ * - For ::DTYPE_FLOAT64, the function calls copy_features_to_inputs_f64().
+ * - For ::DTYPE_FLOAT32, the function calls copy_features_to_inputs_f32().
+ * - If the tensor data type is not supported, the function performs no action.
+ *
+ * @warning No error code is returned if an unsupported dtype is encountered.
+ */
 static void copy_features_to_inputs(struct tensor *inputs, double *features, const size_t i, const size_t cols);
+
+/**
+ * @brief Copies feature values into a double-precision (float64) input tensor for a given batch row.
+ *
+ * This function casts the tensor data to double* and performs a bulk memory copy
+ * from the feature array to the corresponding row of the tensor.
+ *
+ * @param[in,out] inputs   Pointer to the input tensor (dtype = float64).
+ * @param[in]     features Pointer to the array of feature values (excluding the label).
+ * @param[in]     i        Batch index specifying the row to fill.
+ * @param[in]     cols     Total number of columns in the CSV dataset (including the label).
+ */
 static void copy_features_to_inputs_f64(struct tensor *inputs, double *features, const size_t i, const size_t cols);
+
+/**
+ * @brief Copies feature values into a single-precision (float32) input tensor for a given batch row.
+ *
+ * This function casts the tensor data to float* and copies each feature individually,
+ * converting from double (source) to float (tensor). A simple loop is used instead of memcpy
+ * because the source and destination have different data types.
+ *
+ * @param[in,out] inputs   Pointer to the input tensor (dtype = float32).
+ * @param[in]     features Pointer to the array of feature values (double, excluding the label).
+ * @param[in]     i        Batch index specifying the row to fill.
+ * @param[in]     cols     Total number of columns in the CSV dataset (including the label).
+ */
 static void copy_features_to_inputs_f32(struct tensor *inputs, double *features, const size_t i, const size_t cols);
+
+/**
+ * @brief Dispatches label copy operation to the appropriate function based on tensor data type.
+ *
+ * This function writes a single label value into the target tensor at row @p i.
+ * The actual copy is delegated to a type-specific implementation depending on
+ * whether the tensor stores float64 or float32 values.
+ *
+ * @param[in,out] targets Pointer to the target tensor where the label will be written.
+ * @param[in]     label   The label value (double precision) to be stored.
+ * @param[in]     i       Batch index specifying the row in the target tensor to fill.
+ *
+ * @note
+ * - For ::DTYPE_FLOAT64, the function calls copy_label_to_targets_f64().
+ * - For ::DTYPE_FLOAT32, the function calls copy_label_to_targets_f32().
+ * - If the tensor data type is not supported, the function performs no action.
+ *
+ * @warning No error code is returned if an unsupported dtype is encountered.
+ */
 static void copy_label_to_targets(struct tensor *targets, double label, size_t i);
+
+/**
+ * @brief Copies a label value into a double-precision (float64) target tensor.
+ *
+ * This function casts the tensor's raw data buffer to double* and stores the given
+ * label at the specified batch index @p i.
+ *
+ * @param[in,out] targets Pointer to the target tensor (expected dtype = float64).
+ * @param[in]     label   Label value (double precision) to store.
+ * @param[in]     i       Batch index specifying the position in the target tensor to fill.
+ */
 static void copy_label_to_targets_f64(struct tensor *targets, double label, size_t i);
+
+/**
+ * @brief Copies a label value into a single-precision (float32) target tensor.
+ *
+ * This function casts the tensor's raw data buffer to float* and stores the given
+ * label at the specified batch index @p i. The label is converted from double
+ * precision to single precision during the assignment.
+ *
+ * @param[in,out] targets Pointer to the target tensor (expected dtype = float32).
+ * @param[in]     label   Label value (double precision) to store.
+ * @param[in]     i       Batch index specifying the position in the target tensor to fill.
+ *
+ * @note Conversion from double to float may result in a loss of precision.
+ */
 static void copy_label_to_targets_f32(struct tensor *targets, double label, size_t i);
 
 struct csv_dataset *csv_dataset_alloc(const char *csv_path)

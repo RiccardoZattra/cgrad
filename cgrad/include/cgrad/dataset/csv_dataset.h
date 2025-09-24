@@ -29,9 +29,32 @@ struct csv_dataset
 struct csv_dataset *csv_dataset_alloc(const char *csv_path);
 
 /**
- * @brief Samples a batch of data from the dataset using the provided indexes.
+ * @brief Extracts a batch of samples from a CSV dataset and converts them into input and target tensors.
  *
- * TODO
+ * This function takes a subset of rows from a CSV dataset, selected using the indices
+ * provided in @p ixs_batch, and creates two tensors:
+ * - @p inputs: containing the features of each sample (all columns except the first).
+ * - @p targets: containing the label of each sample (the first column).
+ *
+ * Both tensors are allocated using the memory allocator provided in @p env.
+ *
+ * @param[in]  dataset    Pointer to the CSV dataset from which to extract the data.
+ * @param[out] inputs     Pointer to the tensor that will hold the batch features
+ *                        (dimensions: [batch_size, cols-1]).
+ * @param[out] targets    Pointer to the tensor that will hold the batch labels
+ *                        (dimensions: [batch_size, 1]).
+ * @param[in]  ixs_batch  Structure containing the row indices of the dataset to include in the batch.
+ * @param[in]  dtype      Data type to use for the tensors 
+ * @param[in]  env        Computation environment containing the tensor allocator.
+ *
+ * @return A ::cgrad_error error code:
+ * - ::NO_ERROR if the operation completed successfully.
+ * - ::INDEXES_BATCH_NULL if @p ixs_batch is NULL.
+ * - ::TENSOR_ALLOCATION_FAILED if tensor allocation failed.
+ * - Other error codes if @p dataset is invalid.
+ *
+ * @note The first column of the dataset is interpreted as the label (target), while the remaining
+ * columns are treated as input features.
  */
 cgrad_error csv_dataset_sample_batch(const struct csv_dataset *const dataset, struct tensor **const inputs, struct tensor **const targets, const struct indexes_batch *const ixs_batch, const cgrad_dtype dtype, struct cgrad_env *const env);
 
